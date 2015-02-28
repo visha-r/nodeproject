@@ -1,0 +1,1 @@
+{"ide":{"scriptPaths":[{"type":"FOLDER","path":"public/js"}]},"plugins":{"guess-types":{},"lint":{},"chrome-apps":{},"node":{},"angular":{},"node-express":{},"node-mongodb-native":{},"node-mongoose":{},"node-lint":{}},"libs":["ecma5","browser","jquery"]}
