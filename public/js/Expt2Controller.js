@@ -7,18 +7,23 @@ app.controller('MainController', function ($scope, $route) {
 app.config(function ($routeProvider) {
     $routeProvider
      .when('/home', {
-         templateUrl: 'Wallpaper.html'
+         templateUrl: 'partials/Wallpaper.html'
      })
 
      .when('/search', {
-         templateUrl: 'SearchWithFavorites.html',
+         templateUrl: 'partials/SearchWithFavorites.html',
          controller: 'searchController'
      })
 
      .when('/favorites', {
-         templateUrl: 'favorites.html',
+         templateUrl: 'partials/favorites.html',
          controller: 'FavouritesController'
-     });
+     })
+    
+    .when('/shoppingCart', {
+        templateUrl: 'partials/shoppingCart.html',
+        controller: 'ShoppingCartController'
+    });
 
 });
 
@@ -34,12 +39,15 @@ app.controller('searchController', function ($scope, $http) {
         };  
         
         $scope.add = function(product){
-        	console.log('hleooo');
         	product.image = '';
         	$http.post('/add', product)
         	.success(function(response){
         		$scope.products = response;
         	});
+        }
+        
+        $scope.addToCart = function(product){
+        	$http.post('/shopping/addToCart', product);
         }
     });
 
@@ -50,6 +58,19 @@ app.controller('FavouritesController', function ($scope, $http) {
         	$scope.favoriteProducts = response;
         });
         console.log($scope.favoriteProducts);
+});
+
+app.controller('ShoppingCartController', function ($scope, $http) {
+	$scope.cartProducts = [];
+    $http.get('/shopping/cart')
+    .success(function (response) {
+    	$scope.cartProducts = response;
+    	$scope.totalPrice = Number(0);
+    	for(var i in response){
+    		$scope.totalPrice = $scope.totalPrice + Number(response[i].salePrice);
+    	}
+    });
+    console.log(String($scope.cartProducts));
 });
 
 

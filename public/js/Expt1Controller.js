@@ -8,11 +8,11 @@ app.controller('MainController', function ($scope,$route) {
 app.config(function ($routeProvider) {
     $routeProvider
      .when('/home', {
-         templateUrl: '../partials/Wallpaper.html'
+         templateUrl: 'partials/Wallpaper.html'
      })
 
      .when('/search', {
-         templateUrl: 'SearchProductDetails.html',
+         templateUrl: 'partials/SearchProductDetails.html',
          controller: 'searchController'
      })
 

@@ -11,7 +11,7 @@ app.config(function ($routeProvider) {
      })
 
      .when('/search', {
-         templateUrl: 'partials/addProductWithEdit.html',
+         templateUrl: 'partials/productEditWithUserLink.html',
          controller: 'searchController'
      })
 
@@ -21,13 +21,18 @@ app.config(function ($routeProvider) {
      })
     
     .when('/shoppingCart', {
-        templateUrl: 'partials/shoppingCart.html',
+        templateUrl: 'partials/shoppingCartWithEdit.html',
         controller: 'ShoppingCartController'
     })
     
     .when('/reviews/:id', {
-        templateUrl: 'partials/reviews.html',
+        templateUrl: 'partials/reviewsWithUserLink.html',
         controller: 'ReviewController'
+    })
+    
+    .when('/reviewer/:id', {
+        templateUrl: 'partials/reviewerDetails.html',
+        controller: 'ReviewerController'
     });
 
 });
@@ -80,21 +85,47 @@ app.controller('FavouritesController', function ($scope, $http) {
 });
 
 app.controller('ShoppingCartController', function ($scope, $http) {
+	$scope.showCartCount = false;
 	$scope.cartProducts = [];
     $http.get('/shopping/cart')
     .success(function (response) {
     	$scope.cartProducts = response;
     	$scope.totalPrice = Number(0);
     	for(var i in response){
-    		$scope.totalPrice = $scope.totalPrice + Number(response[i].salePrice);
+    		console.log(response[i].count);
+    		$scope.totalPrice = $scope.totalPrice + Number(response[i].salePrice)*Number(response[i].count);
     	}
     });
     
-    $scope.remove = function(product){
-    	$http.delete('/shopping/remove/'+product.id)
+    $scope.remove = function(index){
+    	$http.delete('/shopping/removeCartItem/'+index)
     	.success(function(response){
     		$scope.cartProducts = response;
     	});
+    };
+    
+    $scope.editCount = function(index){
+    	$scope.showCartCount = true;
+    	$scope.selectedIndex = index;
+    	$scope.cartProduct = $scope.cartProducts[index];
+    	$scope.tempCount = $scope.cartProducts[index].count;
+    	};
+    	
+    $scope.updateCount = function(product){
+    	$scope.showCartCount = false;
+    	if(product.count==0){
+    		$scope.remove($scope.selectedIndex);
+    	}
+    	else
+    	{
+        $http.put('/shopping/updateCount/'+$scope.selectedIndex+'/'+product.count)
+        .success(function(response){
+        	$scope.cartProducts = response;
+        	$scope.totalPrice = $scope.totalPrice + 
+        	Math.abs(response[$scope.selectedIndex].count - $scope.tempCount) 
+        	* response[$scope.selectedIndex].salePrice;
+        });
+        }
     }
 });
 
@@ -109,10 +140,18 @@ app.controller('ReviewController', function ($scope, $http, $routeParams) {
     $scope.addReview = function(review){
     $http.post('/shopping/addReview/'+ review+'/'+$scope.reviewId)
     .success(function (response) {
-    	console.log(response);
     	$scope.reviews = response;
     });
     }
+});
+
+app.controller('ReviewerController', function ($scope, $http, $routeParams) {
+	var id = $routeParams.id;
+	$scope.reviewId = id;
+    $http.get('/shopping/getReviewerDetails/'+ id)
+    .success(function (response) {
+    	$scope.reviewer = response;
+    });
 });
 
 

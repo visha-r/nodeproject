@@ -8,17 +8,21 @@
     <link rel="stylesheet" href="css/bootstrap-theme.css" />
     <script type="text/javascript" src="js/angular.min.js"></script>
     <script type="text/javascript" src="js/angular-route.min.js"></script>
-    <script type="text/javascript" src="js/Expt2Controller.js"></script>
+    <script type="text/javascript" src="js/Expt5Controller.js"></script>
     <script type="text/javascript" src="js/ProductService.js"></script>
     <link rel="stylesheet" href="stylesheets/style.css" />
 </head>	
 <body ng-app="AngularApp">
     <div class="main-wrapper">
-        <h1>Node.js Experiment 2 - node.js with POST request </h1>
+        <h1>Node.js Experiment 5 - node.js many-to-many data mapping </h1>
         <div class="demo-wrapper">
-            <h2>node.js experiment to add user' favorite products by posting data to the server</h2>
+            <h2>node.js experiment linking reviewers through many-to-many data mapping</h2>
             <div class="container">
-        	<nav class="navbar navbar-inverse" ng-controller="MainController">
+            <div class="instructions">
+            	Please click 'search' to fetch products, then click <span class="glyphicon glyphicon-comment"></span> link to view all the reviews of the given product.
+            	You can view the reviewer's profile by clicking on the reviewer name.
+            </div>
+       		<nav class="navbar navbar-inverse" ng-controller="MainController">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
@@ -42,9 +46,11 @@
         </div>
         <h2>About the experiment</h2>
         <p id="text">
-            This experiment in addition to fetching data from the server, it also posts data through the body of the request.
-            The data in the body has to be parsed using body-parser to extract the data. The extracted data can then be used
-            to make any further processing. Data extraction can be done as follows :
+            This experiment helps users to view the product information along with the profile of the one who reviewed the
+            product. This uses many to many relationship as there can be many reviews for a single product and one reviewer would
+            have written multiple reviews. So to fetch the reviews written by a particular user, each and every the review of
+            every product has to be checked to get the ones written by this particular user. The iteration to feth the reviews of
+            a particular user is done as follows :
             <br />
             <br />
             <b>Code Snippet:</b>
@@ -53,18 +59,32 @@
             <table class="code">
                 <tr>
                     <td width="100%">
-                        app.post('/addFavorite', function (req, res) {<br/>
-    					favorites.push(req.body); </br>
-    					res.json(favorites); </br>
+                        app.get('/shopping/getReviewerDetails/:id', function(req,res){ <br/>
+						var userProfile = null;<br/>
+						for(var j in users){ <br/>
+						if(users[j].id == req.params.id){ <br/>
+						userProfile = users[j]; <br/>
+						break; <br/>
+						} <br/>
+						} <br/>
+						<br/>
+						for(var k in userProfile.reviewed){ <br/>
+						for(var p in products){ <br/>
+						for(var r in products[p].reviews){ <br/>
+						if(products[p].reviews[r].id == userProfile.reviewed[k].id){ <br/>
+						userProfile.reviewed[k] = products[p].reviews[r]; <br/>
+						} <br/>
+						} <br/>
+						} <br/>
+						} <br/>
+						res.json(userProfile); <br/>
 						}); <br/>
                     </td>
                 </tr>
             </table>
             <br />
-            So when client sends POST request to the server, the server executes the code inside
-            the get method returning the appropriate result. Since there can be more than one post method 
-            configured for the server, the server will match the url to invoke the appropriate method. CLient will
-            send the POST request as follows :
+            Client should send get request appending the id of the reviewer so all his reviews can be fetched. Client will
+            send the get request as follows :
             <br />
             <br />
             <b>Code Snippet:</b>
@@ -73,10 +93,10 @@
             <table class="code">
                 <tr>
                     <td width="100%">
-                        $http.post('/add', product)<br/>
-        				.success(function(response){ <br/>
-        				$scope.products = response; <br/>
-        				}); <br/>
+                        $http.get('/shopping/getReviewerDetails/'+ id) <br/>
+    					.success(function (response) { <br/>
+    					$scope.reviewer = response; <br/>
+    					}); <br/>
                     </td>
                 </tr>
             </table>

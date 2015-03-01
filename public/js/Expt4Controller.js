@@ -21,7 +21,7 @@ app.config(function ($routeProvider) {
      })
     
     .when('/shoppingCart', {
-        templateUrl: 'partials/shoppingCart.html',
+        templateUrl: 'partials/shoppingCartWithEdit.html',
         controller: 'ShoppingCartController'
     })
     
@@ -80,21 +80,47 @@ app.controller('FavouritesController', function ($scope, $http) {
 });
 
 app.controller('ShoppingCartController', function ($scope, $http) {
+	$scope.showCartCount = false;
 	$scope.cartProducts = [];
     $http.get('/shopping/cart')
     .success(function (response) {
     	$scope.cartProducts = response;
     	$scope.totalPrice = Number(0);
     	for(var i in response){
-    		$scope.totalPrice = $scope.totalPrice + Number(response[i].salePrice);
+    		console.log(response[i].count);
+    		$scope.totalPrice = $scope.totalPrice + Number(response[i].salePrice)*Number(response[i].count);
     	}
     });
     
-    $scope.remove = function(product){
-    	$http.delete('/shopping/remove/'+product.id)
+    $scope.remove = function(index){
+    	$http.delete('/shopping/removeCartItem/'+index)
     	.success(function(response){
     		$scope.cartProducts = response;
     	});
+    };
+    
+    $scope.editCount = function(index){
+    	$scope.showCartCount = true;
+    	$scope.selectedIndex = index;
+    	$scope.cartProduct = $scope.cartProducts[index];
+    	$scope.tempCount = $scope.cartProducts[index].count;
+    	};
+    	
+    $scope.updateCount = function(product){
+    	$scope.showCartCount = false;
+    	if(product.count==0){
+    		$scope.remove($scope.selectedIndex);
+    	}
+    	else
+    	{
+        $http.put('/shopping/updateCount/'+$scope.selectedIndex+'/'+product.count)
+        .success(function(response){
+        	$scope.cartProducts = response;
+        	$scope.totalPrice = $scope.totalPrice + 
+        	Math.abs(response[$scope.selectedIndex].count - $scope.tempCount) 
+        	* response[$scope.selectedIndex].salePrice;
+        });
+        }
     }
 });
 
