@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visha's Experiments</title>
+    <script type="text/javascript" src="js/jquery-1.11.2.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-theme.css" />
+    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="js/angular-route.min.js"></script>
+    <script type="text/javascript" src="js/Expt3Controller.js"></script>
+    <script type="text/javascript" src="js/ProductService.js"></script>
+    <link rel="stylesheet" href="stylesheets/style.css" />
+</head>	
+<body ng-app="AngularApp">
+    <div class="main-wrapper">
+        <h1>Node.js Experiment 3 - node.js with PUT request </h1>
+        <div class="demo-wrapper">
+            <h2>node.js experiment to add and update product details sending put request to the server</h2>
+            <div class="container">
+       <nav class="navbar navbar-inverse" ng-controller="MainController">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand active" href="#/home">Online Shopping</a>
+                    <ul class="nav navbar-nav">
+                        <li id="homelink"><a href="#/home">Home<span class="sr-only">(current)</span></a></li>
+                        <li id="searchlink"><a href="#/search">Search</a></li>
+                        <li id="favoritelink"><a href="#/favorites">My Favorites</a></li>
+                        <li id="cartlink"><a href="#/shoppingCart">My cart</a></li>
+                    </ul>
+                </div>
+        </nav>
+        <div ng-view>
+
+        </div>
+    	</div>
+        </div>
+        <h2>About the experiment</h2>
+        <p id="text">
+            This experiment in addition to fetching and posting data to from the server, it also sends put request to the server
+            to update product details. The put request is sent appending the request parameters in the url. The parameters will
+            then be extracted by the server as follows :
+            <br />
+            <br />
+            <b>Code Snippet:</b>
+            <br />
+            <br />
+            <table class="code">
+                <tr>
+                    <td width="100%">
+                        app.put('/shopping/updateCount/:id/:count', function (req, res) { <br/>
+    					cart[req.params.id].count = req.params.count; <br/>
+    					res.json(cart); <br/>
+    					}); <br/>
+                    </td>
+                </tr>
+            </table>
+            <br />
+            So when client sends PUT request to the server, the server executes the code inside
+            the put method returning the appropriate result. Since there can be more than one put method 
+            configured for the server, the server will match the url to invoke the appropriate method. Client will
+            send the POST request as follows :
+            <br />
+            <br />
+            <b>Code Snippet:</b>
+            <br />
+            <br />
+            <table class="code">
+                <tr>
+                    <td width="100%">
+                        $http.post('/shopping/addReview/'+ review+'/'+$scope.reviewId) <br/>
+    					.success(function (response) {<br/>
+    					console.log(response); <br/>
+    					$scope.reviews = response; <br/>
+    					}); <br/>
+    					} <br/>
+                    </td>
+                </tr>
+            </table>
+        </p>
+        <h2>Source Code</h2>
+        <!-- <div><a href="../../fileview/Default.aspx?~/experiments/angular/Experiment4-ProductReviews.html" target="_blank">HTML Source</a></div>
+        <div><a href="../../fileview/Default.aspx?~/experiments/angular/js/angular4.js" target="_blank">AngularJS Source</a></div>
+         -->
+        <h2>References</h2>
+        <div><a href="https://www.youtube.com/watch?v=WGnQAgk2dz4" target="_blank"> Youtube Lecture </a></div>
+    </div>
+</body>
+</html>
